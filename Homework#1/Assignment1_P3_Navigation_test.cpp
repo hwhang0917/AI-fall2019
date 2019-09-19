@@ -186,8 +186,33 @@ void printNode(nodeType curr)
 
 
 // Implement Code
+// Import cmath for distance calculation
+#include <math.h>
+
 vector<nodeType> getSuccesors(nodeType curr, navigationGraph g1) {
 	// Initialize current state variables
-	int vertex_position = curr.state;
-	int parent = curr.parent;
+	int curr_vertex = curr.state; //current vertex
+	int parent = curr.parent; // parent vertex
+
+	// Initialize new node and children vector
+	nodeType newNode; vector<nodeType> children;
+	newNode.parent = curr.state; // set parent state to current state
+
+	vector<int> possible_dest; // vector of possible vertex from starting point
+	for (int i = 0; i <= g1.size; i ++) { // Iterate through adjacency matrix to check if starting point is adjacent to other verticies
+		if (g1.adjM[curr_vertex][i] == 1)
+			possible_dest.push_back(i);
+	}
+	
+	for (int child_vertex: possible_dest) { // loop through possible destination to compute cost
+		double dist; // distance from parent to child -- sqrt((x2-x2)^2 + (y2-y1)^2)
+		dist = sqrt(pow((g1.xloc[child_vertex] - g1.xloc[curr_vertex]),2) + pow((g1.yloc[child_vertex] - g1.yloc[curr_vertex]),2));
+
+		newNode.state = child_vertex;
+		newNode.costH = 0; // ** For now set Heuristic cost to 0
+		newNode.costG = curr.costG + dist;  // costG of the parent + distance from parent to child 
+		children.push_back(newNode); // Pushback newly created node into children vector
+	}
+
+	return children;
 }
