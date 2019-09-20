@@ -7,4 +7,5 @@ This is a personal repository of Heesang Mark Whang taking CSCI440 course of Bio
 #### Table of Contents
 
 * [Homework #1](./HW_1/Assignment_1.md)
+* [Homework #2](./HW_2/Assignment_2.md)
 
