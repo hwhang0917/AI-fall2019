@@ -304,10 +304,61 @@ vector<mcNode> getSuccesors35(mcNode curr) {
 
 // TODO: Breadth First Search Function Implementation
 vector<mcNode> breadth_first_search_MC() {
-	
+	mcNode start = {133,-1,0,0};
+	queue<mcNode> frontier;
+	map<int, mcNode> explored;
+	vector<mcNode> solution;
+	frontier.push(start);
+
+	while (!frontier.empty()) {
+		mcNode curr = frontier.front(); frontier.pop();
+		if (explored.find(curr.state) != explored.end())
+			continue;
+		if (curr.state == 0) { //goal reached
+			while(curr.state != start.state) {
+				solution.push_back(curr);
+				curr = explored[curr.parent];
+			}
+			solution.push_back(curr);
+			return solution;
+		}
+		explored[curr.state] = curr;
+		for (mcNode child: getSuccesors(curr)) {
+			if(explored.find(child.state) == explored.end()) {
+				frontier.push(child);
+			}
+		}
+	}
+
+	return solution;
 }
 
 vector<mcNode> breadth_first_search_MC35() {
-	vector<mcNode> sample;
-	return sample;
+	mcNode start = {155,-1,0,0};
+	queue<mcNode> frontier;
+	map<int, mcNode> explored;
+	vector<mcNode> solution;
+	frontier.push(start);
+
+	while (!frontier.empty()) {
+		mcNode curr = frontier.front(); frontier.pop();
+		if (explored.find(curr.state) != explored.end())
+			continue;
+		if (curr.state == 0) { //goal reached
+			while(curr.state != start.state) {
+				solution.push_back(curr);
+				curr = explored[curr.parent];
+			}
+			solution.push_back(curr);
+			return solution;
+		}
+		explored[curr.state] = curr;
+		for (mcNode child: getSuccesors35(curr)) {
+			if(explored.find(child.state) == explored.end()) {
+				frontier.push(child);
+			}
+		}
+	}
+
+	return solution;
 }

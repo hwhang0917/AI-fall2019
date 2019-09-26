@@ -195,3 +195,139 @@ void printHeatmap(double** M, int n)
 
 
 //Put here your function implementations, including getSuccessors function
+vector<int> breadth_first_search_Nav(navigationGraph g1, int start, int goal) {
+	nodeType root ={start, -1, 0, 0};
+	queue<nodeType> frontier;
+	map<int, nodeType> explored;
+	vector<int> solution;
+
+	frontier.push(root);
+
+	while (!frontier.empty()) {
+		nodeType curr = frontier.front(); frontier.pop();
+		if (explored.find(curr.state) != explored.end())
+			continue;
+		if (curr.state == goal) { //goal reached
+			while(curr.state != root.state) {
+				solution.push_back(curr.state);
+				curr = explored[curr.parent];
+			}
+			solution.push_back(curr.state);
+			return solution;
+		}
+		explored[curr.state] = curr;
+		for (nodeType child: getSuccesors(curr, g1)) {
+			if(explored.find(child.state) == explored.end()) {
+				frontier.push(child);
+			}
+		}
+	}
+
+	return solution;
+}
+vector<int> uniform_cost_search_Nav(navigationGraph g1, int start, int goal) {
+	nodeType root ={start, -1, 0, 0};
+	vector<nodeType> frontier;
+	map<int, nodeType> explored;
+	vector<int> solution;
+
+	frontier.push_back(root);
+
+	while (!frontier.empty()) {
+		
+		nodeType curr;
+		for (int i = 0; i <= frontier.size(); i ++) {
+			for (int j = i + 1; j <= frontier.size(); j ++) {
+				if (frontier[i].costG < frontier[j].costG) {
+					curr = frontier[i];
+					frontier.erase(frontier.begin() + (i-1));
+				} else {
+					curr = frontier[j];
+					frontier.erase(frontier.begin() + (j-1));
+				}
+			}
+		}
+
+		if (explored.find(curr.state) != explored.end())
+			continue;
+		if (curr.state == goal) { //goal reached
+			while(curr.state != root.state) {
+				solution.push_back(curr.state);
+				curr = explored[curr.parent];
+			}
+			solution.push_back(curr.state);
+			cout << endl;
+			return solution;
+		}
+		explored[curr.state] = curr;
+		for (nodeType child: getSuccesors(curr, g1)) {
+			if(explored.find(child.state) == explored.end()) {
+				frontier.push_back(child);
+			}
+		}
+	}
+
+	return solution;
+}
+vector<int> depth_first_search_Nav(navigationGraph g1, int start, int goal) {
+	nodeType root ={start, -1, 0, 0};
+	stack<nodeType> frontier;
+	map<int, nodeType> explored;
+	vector<int> solution;
+
+	frontier.push(root);
+
+	while (!frontier.empty()) {
+		nodeType curr = frontier.top(); frontier.pop();
+		if (explored.find(curr.state) != explored.end())
+			continue;
+		if (curr.state == goal) { //goal reached
+			while(curr.state != root.state) {
+				solution.push_back(curr.state);
+				curr = explored[curr.parent];
+			}
+			solution.push_back(curr.state);
+			return solution;
+		}
+		explored[curr.state] = curr;
+		for (nodeType child: getSuccesors(curr, g1)) {
+			if(explored.find(child.state) == explored.end()) {
+				frontier.push(child);
+			}
+		}
+	}
+	
+	return solution;
+}
+
+
+
+#include <math.h>
+
+vector<nodeType> getSuccesors(nodeType curr, navigationGraph g1) {
+	// Initialize current state variables
+	int curr_vertex = curr.state; //current vertex
+	int parent = curr.parent; // parent vertex
+
+	// Initialize new node and children vector
+	nodeType newNode; vector<nodeType> children;
+	newNode.parent = curr.state; // set parent state to current state
+
+	vector<int> possible_dest; // vector of possible vertex from starting point
+	for (int i = 0; i <= g1.size; i ++) { // Iterate through adjacency matrix to check if starting point is adjacent to other verticies
+		if (g1.adjM[curr_vertex][i] == 1)
+			possible_dest.push_back(i);
+	}
+	
+	for (int child_vertex: possible_dest) { // loop through possible destination to compute cost
+		double dist; // distance from parent to child -- sqrt((x2-x2)^2 + (y2-y1)^2)
+		dist = sqrt(pow((g1.xloc[child_vertex] - g1.xloc[curr_vertex]),2) + pow((g1.yloc[child_vertex] - g1.yloc[curr_vertex]),2));
+
+		newNode.state = child_vertex;
+		newNode.costH = 0; // ** For now set Heuristic cost to 0
+		newNode.costG = curr.costG + dist;  // costG of the parent + distance from parent to child 
+		children.push_back(newNode); // Pushback newly created node into children vector
+	}
+
+	return children;
+}
