@@ -62,7 +62,7 @@ Assignment #3
 
   * **(1 point)** Modify your A* and uniform-cost functions to count the number of nodes visited. Submit both modified functions, marking in **bold** font the changes you made.
 
-    Added, line[233], [238], [242], [259] to print node visit counter. Check Code: [a_star_nav.cc](./HW_3/a_star_nav.cc)
+    Added, line[233], [238], [242], [259] to print node visit counter. Check Code: [a_star_nav.cc](./a_star_nav.cc)
 
   * **(2 points)** Run both functions for each of the scenarios given, and complete the table below.
     
