@@ -199,8 +199,6 @@ vector<int> uniform_cost_search_Nav(navigationGraph g1, int start, int goal) {
 		if (curr.state == goal)
 		{
 			explored[goal] = curr;
-			visit_count = explored.size();
-			cout << "** Uniform Cost Search Visted Node Count: "  << visit_count << endl;
 			return getSolPath(goal, start, explored);
 		}
 		if (explored.find(curr.state) == explored.end()) //if the state has not been explored before, expand
@@ -216,9 +214,6 @@ vector<int> uniform_cost_search_Nav(navigationGraph g1, int start, int goal) {
 		}
 	}
 
-	visit_count = explored.size();
-	cout << "** Uniform Cost Search Visted Node Count: "  << visit_count << endl;
-
 	return path;
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -227,7 +222,11 @@ vector<int> astar_SLD_Nav(navigationGraph g1, int start, int goal) {
 	vector<int> path;
 	map<int, nodeType> explored; //The set of all nodes already explored
 	priority_queue<nodeType> frontier; //for BFS the frontier is a queue
-	nodeType startState = { start,-1,0,0 }; //initialize the start node
+
+	double heuristic_dist; // heuristic distance && computer the heuristic distance of starting node
+	heuristic_dist = \
+		sqrt(pow((g1.xloc[start] - g1.xloc[goal]),2) + pow((g1.yloc[start] - g1.yloc[goal]),2));
+	nodeType startState = { start,-1,0, heuristic_dist}; //initialize the start node
 	frontier.push(startState); //initialize the frontier with the start node
 
 	while (!frontier.empty())
@@ -242,11 +241,12 @@ vector<int> astar_SLD_Nav(navigationGraph g1, int start, int goal) {
 		{
 			explored[curr.state] = curr;
 			vector<nodeType> children = getSuccesors(curr, g1);
-			int numChildren = children.size();
-			for (int i = 0; i < numChildren; i++)
+			for (nodeType child: children) // Loop through children node
 			{
-				if (explored.find(children[i].state) == explored.end())
-					frontier.push(children[i]);
+				// Computer heuristic distance of each child nodes
+				child.costH = sqrt(pow((g1.xloc[child.state] - g1.xloc[goal]),2) + pow((g1.yloc[child.state] - g1.yloc[goal]),2));
+				if (explored.find(child.state) == explored.end())
+					frontier.push(child);
 			}
 		}
 	}
