@@ -5,7 +5,7 @@
 #include <stack>
 #include <map>
 #include <iomanip>
-#include <math>
+#include <math.h>
 
 using namespace std;
 
@@ -34,10 +34,11 @@ struct navigationGraph
 bool readGraphFromFile(string filename, navigationGraph& g1);  //given a file, populate the graph
 void printNode(nodeType curr);  //given a node, it prints out it's information
 void printHeatmap(double** M, int n); //prints the adjacency (connections) matrix
+vector<int> getSolPath(int currentId, int startId, map<int, nodeType> exploredNodes);
 
 vector<nodeType> getSuccesors(nodeType curr, navigationGraph g1);  //given a current node curr and the graph, return the nodes you can reach from curr.
 vector<int> uniform_cost_search_Nav(navigationGraph g1, int start, int goal);  //uniform cost search between two nodes, returns a path
-vector<int> astar_SLD_Nav(navigationGraphg1, int start, int goal); //astar cost search between two nodes, returns a path
+vector<int> astar_SLD_Nav(navigationGraph g1, int start, int goal); //astar cost search between two nodes, returns a path
 
 int main(int argc, char const *argv[]) {
   string filename = "P4x6.txt";
@@ -166,51 +167,80 @@ vector<nodeType> getSuccesors(nodeType curr, navigationGraph g1) {
 
 	return children;
 }
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-vector<int> uniform_cost_search_Nav(navigationGraph g1, int start, int goal) {
-	nodeType root = {start, -1, 0, 0};
-	vector<nodeType> frontier;
-	map<int, nodeType> explored;
-	vector<int> solution;
 
-	frontier.push_back(root);
+vector<int> getSolPath(int currentId, int startId, map<int, nodeType> exploredNodes)
+{
+	vector<int> path;
 
-	while (!frontier.empty()) {
-
-		nodeType curr;
-		for (int i = 0; i <= frontier.size(); i ++) {
-			for (int j = i + 1; j <= frontier.size(); j ++) {
-				if (frontier[i].costG < frontier[j].costG) {
-					curr = frontier[i];
-					frontier.erase(frontier.begin() + (i-1));
-				} else {
-					curr = frontier[j];
-					frontier.erase(frontier.begin() + (j-1));
-				}
-			}
-		}
-
-		if (explored.find(curr.state) != explored.end())
-			continue;
-		if (curr.state == goal) { //goal reached
-			while(curr.state != root.state) {
-				solution.push_back(curr.state);
-				curr = explored[curr.parent];
-			}
-			solution.push_back(curr.state);
-			cout << endl;
-			return solution;
-		}
-		explored[curr.state] = curr;
-		for (nodeType child: getSuccesors(curr, g1)) {
-			if(explored.find(child.state) == explored.end()) {
-				frontier.push_back(child);
-			}
-		}
+	path.push_back(currentId);
+	nodeType curr = exploredNodes[currentId];
+	while (curr.parent != startId)
+	{
+		curr = exploredNodes[curr.parent];
+		path.push_back(curr.state);
 	}
-
-	return solution;
+	path.push_back(startId);
+	return path;
 }
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
+vector<int> uniform_cost_search_Nav(navigationGraph g1, int start, int goal) {
+	vector<int> path;
+	map<int, nodeType> explored; //The set of all nodes already explored
+	priority_queue<nodeType> frontier; //for BFS the frontier is a queue
+	nodeType startState = { start,-1,0,0 }; //initialize the start node
+	frontier.push(startState); //initialize the frontier with the start node
+
+	while (!frontier.empty())
+	{
+		nodeType curr = frontier.top(); frontier.pop(); //take next node from the frontier
+		if (curr.state == goal)
+		{
+			explored[goal] = curr;
+			return getSolPath(goal, start, explored);
+		}
+		if (explored.find(curr.state) == explored.end()) //if the state has not been explored before, expand
+		{
+			explored[curr.state] = curr;
+			vector<nodeType> children = getSuccesors(curr, g1);
+			int numChildren = children.size();
+			for (int i = 0; i < numChildren; i++)
+			{
+				if (explored.find(children[i].state) == explored.end())
+					frontier.push(children[i]);
+			}
+		}
+	}
+	return path;
+}
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+vector<int> astar_SLD_Nav(navigationGraph g1, int start, int goal) {
+	vector<int> path;
+	map<int, nodeType> explored; //The set of all nodes already explored
+	priority_queue<nodeType> frontier; //for BFS the frontier is a queue
+	nodeType startState = { start,-1,0,0 }; //initialize the start node
+	frontier.push(startState); //initialize the frontier with the start node
+
+	while (!frontier.empty())
+	{
+		nodeType curr = frontier.top(); frontier.pop(); //take next node from the frontier
+		if (curr.state == goal)
+		{
+			explored[goal] = curr;
+			return getSolPath(goal, start, explored);
+		}
+		if (explored.find(curr.state) == explored.end()) //if the state has not been explored before, expand
+		{
+			explored[curr.state] = curr;
+			vector<nodeType> children = getSuccesors(curr, g1);
+			int numChildren = children.size();
+			for (int i = 0; i < numChildren; i++)
+			{
+				if (explored.find(children[i].state) == explored.end())
+					frontier.push(children[i]);
+			}
+		}
+	}
+	return path;
+}
