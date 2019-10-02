@@ -190,15 +190,16 @@ vector<int> uniform_cost_search_Nav(navigationGraph g1, int start, int goal) {
 	priority_queue<nodeType> frontier; //for BFS the frontier is a queue
 	nodeType startState = { start,-1,0,0 }; //initialize the start node
 	frontier.push(startState); //initialize the frontier with the start node
-	int visit_count; // Visted counter
+	int visit_count = 0; // Visted counter
 
 	while (!frontier.empty())
 	{
 		nodeType curr = frontier.top(); frontier.pop(); //take next node from the frontier
-
+		visit_count ++;
 		if (curr.state == goal)
 		{
 			explored[goal] = curr;
+			cout << "(UC)Node visited: " << visit_count << endl;
 			return getSolPath(goal, start, explored);
 		}
 		if (explored.find(curr.state) == explored.end()) //if the state has not been explored before, expand
@@ -214,6 +215,7 @@ vector<int> uniform_cost_search_Nav(navigationGraph g1, int start, int goal) {
 		}
 	}
 
+	cout << "(UC)Node visited: " << visit_count << endl;
 	return path;
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -228,13 +230,16 @@ vector<int> astar_SLD_Nav(navigationGraph g1, int start, int goal) {
 		sqrt(pow((g1.xloc[start] - g1.xloc[goal]),2) + pow((g1.yloc[start] - g1.yloc[goal]),2));
 	nodeType startState = { start,-1,0, heuristic_dist}; //initialize the start node
 	frontier.push(startState); //initialize the frontier with the start node
+	int visit_count = 0; // Visted counter
 
 	while (!frontier.empty())
 	{
 		nodeType curr = frontier.top(); frontier.pop(); //take next node from the frontier
+		visit_count ++;
 		if (curr.state == goal)
 		{
 			explored[goal] = curr;
+			cout << "(A*)Node visited: " << visit_count << endl;
 			return getSolPath(goal, start, explored);
 		}
 		if (explored.find(curr.state) == explored.end()) //if the state has not been explored before, expand
@@ -250,5 +255,7 @@ vector<int> astar_SLD_Nav(navigationGraph g1, int start, int goal) {
 			}
 		}
 	}
+
+	cout << "(A*)Node visited: " << visit_count << endl;
 	return path;
 }
