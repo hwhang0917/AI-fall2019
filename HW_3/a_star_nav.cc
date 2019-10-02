@@ -190,13 +190,17 @@ vector<int> uniform_cost_search_Nav(navigationGraph g1, int start, int goal) {
 	priority_queue<nodeType> frontier; //for BFS the frontier is a queue
 	nodeType startState = { start,-1,0,0 }; //initialize the start node
 	frontier.push(startState); //initialize the frontier with the start node
+	int visit_count; // Visted counter
 
 	while (!frontier.empty())
 	{
 		nodeType curr = frontier.top(); frontier.pop(); //take next node from the frontier
+
 		if (curr.state == goal)
 		{
 			explored[goal] = curr;
+			visit_count = explored.size();
+			cout << "** Uniform Cost Search Visted Node Count: "  << visit_count << endl;
 			return getSolPath(goal, start, explored);
 		}
 		if (explored.find(curr.state) == explored.end()) //if the state has not been explored before, expand
@@ -204,13 +208,17 @@ vector<int> uniform_cost_search_Nav(navigationGraph g1, int start, int goal) {
 			explored[curr.state] = curr;
 			vector<nodeType> children = getSuccesors(curr, g1);
 			int numChildren = children.size();
-			for (int i = 0; i < numChildren; i++)
+			for (nodeType child: children)
 			{
-				if (explored.find(children[i].state) == explored.end())
-					frontier.push(children[i]);
+				if (explored.find(child.state) == explored.end())
+					frontier.push(child);
 			}
 		}
 	}
+
+	visit_count = explored.size();
+	cout << "** Uniform Cost Search Visted Node Count: "  << visit_count << endl;
+
 	return path;
 }
 ///////////////////////////////////////////////////////////////////////////////////
