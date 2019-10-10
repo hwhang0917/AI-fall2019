@@ -2,3 +2,4 @@
 *.exe
 *.json
 __pycache__
+test*
