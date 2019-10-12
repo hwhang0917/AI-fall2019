@@ -284,6 +284,24 @@ int getAttackScore(int Q[])
 
 void nextPosition(int Q[], int nextQ[])
 {
+	for (int i = 0; i < 8; i++) // Copy Q[] into nextQ[]
+			nextQ[i] = Q[i];
+
+	int pickColumn = rand() % 8; // Select a column for a queen to be moved
+	int possibleMoves[7]; // Array of possible queen moves in the selected column (0~7 except current position)
+	int curr_pos = Q[pickColumn]; // Current row position of the queen in selected column
+
+	for (int i = 0; i < 7; i++) { // Populate the possible moves array with 0~7 except current position
+		if (i >= curr_pos)
+			possibleMoves[i] = i + 1;
+		else
+			possibleMoves[i] = i;
+	}
+
+	int nextMove_idx = rand() % 7; // Select next possible move index
+	int nextMove = possibleMoves[nextMove_idx]; // Select next move
+
+	nextQ[pickColumn] = nextMove; // Move nextQ[] into selected position 
 }
 
 bool acceptNext(double dE, double T)
