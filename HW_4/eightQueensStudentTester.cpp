@@ -18,7 +18,7 @@ int getAttackScore(int Q[]);
 //given an 8 queen placement (1 queen per file), return the number of pairs of attacking queens
 
 void nextPosition(int Q[], int nextQ[]);
-//given an 8 queen placement Q (1 queen per file), 
+//given an 8 queen placement Q (1 queen per file),
 //return the next placement nextQ, by changing the position of one of the queens
 
 bool acceptNext(double dE, double T);
@@ -40,7 +40,7 @@ bool solveSimulatedAnnealing(int Sol[], double T0 = 4, int maxSteps = 5000);
 
 /*drawing functions*******************************************************/
 void getBoard(string B[]);
-//returns B, a 24x40  array of characters containing the chess board layout. 
+//returns B, a 24x40  array of characters containing the chess board layout.
 
 void placeQueens(string B[], int Q[]);
 //given a board layout B, place the queens on the board.
@@ -250,51 +250,36 @@ void printBoard(string B[])
 int getAttackScore(int Q[])
 {	// Compute number of conflicts
 
-	int row_conf = 0; // number of conflict horizontally (row)
-	int diag_conf = 0; // number of conflict diagonally (diag)
-	int total_conf = 0; // total conflict number
+	int conflicts = 0; // number of conflicts
 
-	///////////////////////////////////////////////////////////////////////////////////
-	//							Row Conflict computation							 //
-	///////////////////////////////////////////////////////////////////////////////////
-
-	int QCount_in_row[8] = {}; // number of queens in row [index]
-
-	for (int i = 0; i < 8; i++) { // Increment for number of queens in the same row
-		int row_id = Q[i];
-		QCount_in_row[row_id]++;
-	}
-
-	for (int i = 0; i < 8; i++) { // Same number of 'n' queens in a row makes (n*(n-1)/2) conflicts
-		int queen_num = QCount_in_row[i];
-		row_conf += (queen_num * (queen_num - 1) / 2);
-	}
-
-	///////////////////////////////////////////////////////////////////////////////////
-	//						Diagonal Conflict computation							 //
-	///////////////////////////////////////////////////////////////////////////////////
 	// Refer to Note.md
+	int QCount_in_row[8] = {}; // number of queens in row [index]
 	int QCount_in_diagA[15] = {}; // number of queens in diagonalA [index] [0] ~ [14]
 	int QCount_in_diagB[15] = {}; // number of queens in diagonalB [index] [0] ~ [14]
 
-	for (int i = 0; i < 8; i++) { // Increment for number of queens in the same diagonal line (A) and (B)
-		int diagA_id = Q[i] + i;
-		int diagB_id = (8 - Q[i] + 1) + i; // flip the row_id for diagB_id
+	for (int i = 0; i < 8; i++) { // Increment for number of queens in the same row
+		int row_id = Q[i]; // Row ID
+		int diagA_id = Q[i] + i; // Diagonal Line (A) ID
+		int diagB_id = (8 - Q[i] + 1) + i; // Diagonal Line (B) ID: flip the row_id for diagB_id
+
+		// Increment, each time there are queens in the same row/diagonal
+		QCount_in_row[row_id]++;
 		QCount_in_diagA[diagA_id]++;
 		QCount_in_diagB[diagB_id]++;
 	}
 
-	for (int i = 0; i < 15; i++) { // Same number of 'n' queens in a diagonal line A or B makes (n*(n-1)/2) conflicts
+	for (int i = 0; i < 15; i++) { // Same number of 'n' queens in a row or a diagonal line A or B makes (n*(n-1)/2) conflicts
+		if (i <= 8) { // Row conflict computation
+			int queen_num_row = QCount_in_row[i];
+			conflicts += (queen_num_row * (queen_num_row - 1) / 2);
+		}
 		int queen_num_dA = QCount_in_diagA[i];
 		int queen_num_dB = QCount_in_diagB[i];
-		diag_conf += (queen_num_dA * (queen_num_dA - 1) / 2);
-		diag_conf += (queen_num_dB * (queen_num_dB - 1) / 2);
+		conflicts += (queen_num_dA * (queen_num_dA - 1) / 2);
+		conflicts += (queen_num_dB * (queen_num_dB - 1) / 2);
 	}
 
-	// Add all conflicts
-	total_conf = row_conf + diag_conf;
-
-	return total_conf;
+	return conflicts;
 }
 
 void nextPosition(int Q[], int nextQ[])
