@@ -17,7 +17,56 @@ Assignment #4
   a) **(1 points)** Implement a function that given a random placement of the queens, will return the # of conflicts (as discussed in the book and in class (a conflicts occur anytime two queens can attack each other).
 
 ```C++
-int getAttackScore(int Q[]);
+int getAttackScore(int Q[]) { // Compute number of conflicts
+    	int row_conf = 0; // number of conflict horizontally (row)
+	int diag_conf = 0; // number of conflict diagonally (diag)
+	int total_conf = 0; // total conflict number
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//							Row Conflict computation							 //
+	///////////////////////////////////////////////////////////////////////////////////
+
+	int QCount_in_row[8] = {}; // number of queens in row [index]
+
+	for (int i = 0; i < 8; i++) { // Increment for number of queens in the same row
+		int row_id = Q[i];
+		QCount_in_row[row_id]++;
+	}
+
+	for (int i = 0; i < 8; i++) { // Same number of 'n' queens in a row makes (n*(n-1)/2) conflicts
+		int queen_num = QCount_in_row[i];
+		row_conf += (queen_num * (queen_num - 1) / 2);
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//						Diagonal Conflict computation							 //
+	///////////////////////////////////////////////////////////////////////////////////
+	// Refer to Note.md
+	int QCount_in_diagA[15] = {}; // number of queens in diagonalA [index] [0] ~ [14]
+	int QCount_in_diagB[15] = {}; // number of queens in diagonalB [index] [0] ~ [14]
+
+	for (int i = 0; i < 8; i++) { // Increment for number of queens in the same diagonal line (A)
+		int diagA_id = Q[i] + i;
+		QCount_in_diagA[diagA_id]++;
+	}
+
+	for (int i = 0; i < 8; i++) { // Increment for number of queens in the same diagonal line (B)
+		int diagB_id = (8 - Q[i] + 1) + i; // flip the row_id for diagB_id
+		QCount_in_diagB[diagB_id]++;
+	}
+
+	for (int i = 0; i < 15; i++) { // Same number of 'n' queens in a diagonal line A or B makes (n*(n-1)/2) conflicts
+		int queen_num_dA = QCount_in_diagA[i];
+		int queen_num_dB = QCount_in_diagB[i];
+		diag_conf += (queen_num_dA * (queen_num_dA - 1) / 2);
+		diag_conf += (queen_num_dB * (queen_num_dB - 1) / 2);
+	}
+
+	// Add all conflicts
+	total_conf = row_conf + diag_conf;
+
+	return total_conf;
+}
 ```
 
   b) **(1 points)** Implement a function that given a queen position, will return a neighbor position obtained by randomly moving one of the queens to a different row on the same column. Implement a function that given a *∆E* and a temperature *T*, will return true with probability *e^(∆E/T)*.
