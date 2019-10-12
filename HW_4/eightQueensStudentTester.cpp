@@ -277,13 +277,10 @@ int getAttackScore(int Q[])
 	int QCount_in_diagA[15] = {}; // number of queens in diagonalA [index] [0] ~ [14]
 	int QCount_in_diagB[15] = {}; // number of queens in diagonalB [index] [0] ~ [14]
 
-	for (int i = 0; i < 8; i++) { // Increment for number of queens in the same diagonal line (A)
+	for (int i = 0; i < 8; i++) { // Increment for number of queens in the same diagonal line (A) and (B)
 		int diagA_id = Q[i] + i;
-		QCount_in_diagA[diagA_id]++;
-	}
-
-	for (int i = 0; i < 8; i++) { // Increment for number of queens in the same diagonal line (B)
 		int diagB_id = (8 - Q[i] + 1) + i; // flip the row_id for diagB_id
+		QCount_in_diagA[diagA_id]++;
 		QCount_in_diagB[diagB_id]++;
 	}
 
