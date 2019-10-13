@@ -148,6 +148,64 @@ int main()
 	printBoard(B);
 	system("pause");
 
+	/*Comparing SA and FCHC*/
+	int Q_origin[8]; // board for Testing
+
+	cout << "\n\nComparing Simulated Annealing with First Choice Hill Climbing... \n";
+	getRandomPlacement(Q_origin);
+	copy(Q_origin, Q_origin+8, Q); // copy the values in Q_origin into Q
+
+	cout << "Initial position.\n";
+	cout << "Attack Score : " << getAttackScore(Q) << endl;
+	getBoard(B);
+	placeQueens(B, Q);
+	printBoard(B);
+
+	/* N: 5000, T0: 4 */
+	cout << "\n\n Testing with the following variables: (100 run) \n";
+	cout << "N: 5000 and T0 = 4" << endl;
+
+	int SA_count = 0, FCHC_count = 0; // initialize success count
+
+	for (int i = 0; i < 100; i++) { // run 100 times
+		copy(Q_origin, Q_origin+8, Q); // reset Q
+		if (solveSimulatedAnnealing(Q, 4, 5000))
+			SA_count++;
+
+		copy(Q_origin, Q_origin+8, Q); // reset Q
+		if (solveHillClimbingFC(Q, 5000))
+			FCHC_count++;
+	}
+
+	// Output success rate
+	cout << "===== Success Rate =====" << endl;
+	cout << "Simulated Annealing: " << SA_count << " %" << endl;
+	cout << "First Choice Hill Climbing: " << FCHC_count << " %" << endl;
+	cout << "========================" << endl;
+
+
+	/* N: 50000, T0: 4 */
+	cout << "\n\n Testing with the following variables: (100 run) \n";
+	cout << "N: 50000 and T0 = 4" << endl;
+
+	SA_count = 0, FCHC_count = 0; // reset success count
+
+	for (int i = 0; i < 100; i++) { // run 100 times
+		copy(Q_origin, Q_origin+8, Q); // reset Q
+		if (solveSimulatedAnnealing(Q, 4, 50000))
+			SA_count++;
+
+		copy(Q_origin, Q_origin+8, Q); // reset Q
+		if (solveHillClimbingFC(Q, 50000))
+			FCHC_count++;
+	}
+
+	// Output success rate
+	cout << "===== Success Rate =====" << endl;
+	cout << "Simulated Annealing: " << SA_count << " %" << endl;
+	cout << "First Choice Hill Climbing: " << FCHC_count << " %" << endl;
+	cout << "========================" << endl;
+
 
 	system("pause");
 	return 0;
@@ -301,22 +359,71 @@ void nextPosition(int Q[], int nextQ[])
 	int nextMove_idx = rand() % 7; // Select next possible move index
 	int nextMove = possibleMoves[nextMove_idx]; // Select next move
 
-	nextQ[pickColumn] = nextMove; // Move nextQ[] into selected position 
+	nextQ[pickColumn] = nextMove; // Move nextQ[] into selected position
 }
 
 bool acceptNext(double dE, double T)
 {
-	return false;
+	double randProb = ((double) rand() / (RAND_MAX)); // Save random double from 0~1
+	double actProb = exp(dE / T); // Actual probability
+
+	if (randProb <= actProb) // return true if double is <= actual probability
+		return true;
+	else // otherwise return false
+		return false;
 }
 
 
 bool solveSimulatedAnnealing(int Sol[], double T0, int maxSteps)
 {
-	return false;
+	double dE; // initialize energy difference
+	double dT = T0 / maxSteps; // T steps should be that of T / N, so that after N runs, T = 0
+	int nextQ[8];
+	for (int i = 0; i <8; i++) // Copy given random queen position to nextQ
+		nextQ[i] = Sol[i];
+
+	for (int i = maxSteps; i >= 0; i--) { // Repeat for maxSteps times
+		if (getAttackScore(Sol) == 0) // if solution is found, return true
+			return true;
+
+		nextPosition(Sol, nextQ); // get random next move
+		dE = getAttackScore(Sol) - getAttackScore(nextQ); // compute energy difference
+
+		if (dE > 0) { // if energy difference is positive, pick the move
+			for (int i = 0; i < 8; i ++) // copy nextQ into Sol
+				Sol[i] = nextQ[i];
+		}
+		else { // else, check the probability and determine whether to pick the move
+			if (acceptNext(dE, T0)) {
+				for (int i = 0; i < 8; i ++) // copy nextQ into Sol
+					Sol[i] = nextQ[i];
+			}
+		}
+
+		T0 -= dT; // Decrement temperature by dT
+	}
+	return false; // solution not found
 }
 
 
 bool solveHillClimbingFC(int Sol[], int maxSteps)
 {
-	return false;
+	double dE; // initialize energy difference
+	int nextQ[8];
+	for (int i = 0; i <8; i++) // Copy given random queen position to nextQ
+		nextQ[i] = Sol[i];
+
+	for (int i = maxSteps; i >= 0; i--) { // Repeat for maxSteps times
+		if (getAttackScore(Sol) == 0) // if solution is found, return true
+			return true;
+
+		nextPosition(Sol, nextQ); // get random next move
+		dE = getAttackScore(Sol) - getAttackScore(nextQ); // compute energy difference
+
+		if (dE >= 0) { // if energy difference is positive, pick the move
+			for (int i = 0; i < 8; i ++) // copy nextQ into Sol
+				Sol[i] = nextQ[i];
+		}
+	}
+	return false; // solution not found
 }
