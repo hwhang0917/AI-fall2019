@@ -309,7 +309,7 @@ int getAttackScore(int Q[])
 {	// Compute number of conflicts
 
 	int conflicts = 0; // number of conflicts
-
+	int row_conf = 0, dA_conf = 0, dB_conf = 0;
 	// Refer to Note.md
 	int QCount_in_row[8] = {}; // number of queens in row [index]
 	int QCount_in_diagA[15] = {}; // number of queens in diagonalA [index] [0] ~ [14]
@@ -318,7 +318,7 @@ int getAttackScore(int Q[])
 	for (int i = 0; i < 8; i++) { // Increment for number of queens in the same row
 		int row_id = Q[i]; // Row ID
 		int diagA_id = Q[i] + i; // Diagonal Line (A) ID
-		int diagB_id = (8 - Q[i] + 1) + i; // Diagonal Line (B) ID: flip the row_id for diagB_id
+		int diagB_id = (7 - Q[i] + 1) + i; // Diagonal Line (B) ID: flip the row_id for diagB_id
 
 		// Increment, each time there are queens in the same row/diagonal
 		QCount_in_row[row_id]++;
@@ -327,16 +327,21 @@ int getAttackScore(int Q[])
 	}
 
 	for (int i = 0; i < 15; i++) { // Same number of 'n' queens in a row or a diagonal line A or B makes (n*(n-1)/2) conflicts
-		if (i <= 8) { // Row conflict computation
+		if (i < 8) { // Row conflict computation
 			int queen_num_row = QCount_in_row[i];
-			conflicts += (queen_num_row * (queen_num_row - 1) / 2);
+			row_conf += (queen_num_row * (queen_num_row - 1) / 2);
 		}
 		int queen_num_dA = QCount_in_diagA[i];
 		int queen_num_dB = QCount_in_diagB[i];
-		conflicts += (queen_num_dA * (queen_num_dA - 1) / 2);
-		conflicts += (queen_num_dB * (queen_num_dB - 1) / 2);
+		dA_conf += (queen_num_dA * (queen_num_dA - 1) / 2);
+		dB_conf += (queen_num_dB * (queen_num_dB - 1) / 2);
 	}
 
+	// cout << "Row Conflict: " << row_conf << endl;
+	// cout << "D_A Conflict: " << dA_conf << endl;
+	// cout << "D_B Conflict: " << dB_conf << endl;
+
+	conflicts = row_conf + dA_conf + dB_conf;
 	return conflicts;
 }
 
