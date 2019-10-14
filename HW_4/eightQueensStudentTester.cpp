@@ -425,7 +425,7 @@ bool solveHillClimbingFC(int Sol[], int maxSteps)
 		nextPosition(Sol, nextQ); // get random next move
 		dE = getAttackScore(Sol) - getAttackScore(nextQ); // compute energy difference
 
-		if (dE >= 0) { // if energy difference is positive, pick the move
+		if (dE > 0) { // if energy difference is positive, pick the move
 			for (int i = 0; i < 8; i ++) // copy nextQ into Sol
 				Sol[i] = nextQ[i];
 		}
