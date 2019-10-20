@@ -176,7 +176,7 @@ int main()
 ///Drawing and game play functions////////////////////////
 void drawBoard(string state)
 {
-	string board[] = { 
+	string board[] = {
 	".....|.....|.....",
 	".....|.....|.....",
 	".....|.....|.....",
@@ -308,7 +308,7 @@ int minimax(string state, bool xturn)
 
 	if (xturn)  //max players turn
 	{
-		//pick the action that maximizes 
+		//pick the action that maximizes
 		double maxv = -2000;
 		action = 0;
 		for (int i = 0; i < 9; i++)
@@ -328,7 +328,7 @@ int minimax(string state, bool xturn)
 	}
 	else
 	{
-		//pick the action that minimizes 
+		//pick the action that minimizes
 		double minv = 2000;
 		action = 0;
 		for (int i = 0; i < 9; i++)
@@ -380,7 +380,7 @@ int eval(string s)  //given a state s, return 1 if x wins, -1 if o wins, 0  unde
 		}
 
 		// Check for winner
-		if (x_Count == 3) 
+		if (x_Count == 3)
 			return 1;
 		else if (o_Count == 3)
 			return -1;

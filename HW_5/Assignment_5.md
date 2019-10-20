@@ -28,10 +28,47 @@ Assignment #4
      * 0 if the position is not a winning position for either side yet
 
      ```C++
-     int getAttackScore(int Q[]);
+     int eval(string s)  //given a state s, return 1 if x wins, -1 if o wins, 0  undetermined (may or may not be a leaf)
+     {
+     	// 2D array of winning index combinations
+     	// Note: there are total of 8 ways to win 3x3 tictactoe
+     	int winning_index[8][3] = {
+     		{0,1,2}, {3,4,5}, {6,7,8}, // Row
+     		{0,3,6}, {1,4,7}, {2,5,8}, // Column
+     		{0,4,9}, {2,4,6} // Diagonal
+     	};
+
+     	for (int i = 0; i < 8; i ++) { // Loop through array of combinations
+     		int x_Count = 0, o_Count = 0; // Counter for number of Xs and Os
+
+     		for (int j = 0; j < 3; j ++) { // Loop through individual combination
+     			switch(s[winning_index[i][j]]) {
+     				case 'x':
+     				case 'X':
+     					x_Count++;
+     					break;
+     				case 'o':
+     				case 'O':
+     					o_Count++;
+     					break;
+     				default:
+     					break;
+     			}
+     		}
+     
+     		// Check for winner
+     		if (x_Count == 3)
+     			return 1;
+     		else if (o_Count == 3)
+     			return -1;
+     	}
+
+     	// No winner
+     	return 0;
+     }
      ```
 
-     
+
 
    * b) **(2 points)** The minmax function has already implemented, but in order for it to work, you need to implement the minvalue and maxvalue functions (pseudocode in the textbook page 166).
 
@@ -40,12 +77,10 @@ Assignment #4
      double maxvalue(string state);
      ```
 
-     
 
-   * c) **(2 points)** Implement the alpha-beta algorithm (pseudocode in the textbook page 170). 
+
+   * c) **(2 points)** Implement the alpha-beta algorithm (pseudocode in the textbook page 170).
 
      ```C++
      int minmaxAB(string state, bool xturn);
      ```
-
-     
