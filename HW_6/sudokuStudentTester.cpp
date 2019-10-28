@@ -405,12 +405,76 @@ vector<int> backtrackCSP(vector<int> assignment, int count, vector<int> domain[8
 
 bool AC3(vector<int> domain[81], const bool C[81][81])
 {
+	queue<arcType> arcs;
+	for (int xi = 0; xi < 81; xi++) { // Initialize arcType queue that satisfies C[xi][xj]
+		for (int xj = 0; xj < 81; xj++) {
+			if (C[xi][xj]) {
+				arcType tmpArc = {xi, xj};
+				arcs.push(tmpArc);
+			}
+		}
+	}
+
+	// Neighbor index calculation factors
+	/*------------------------- general
+	(xi-10)[0] | (xi-9) [1] | (xi-8)  [2]
+	(xi-1) [3] |     xi     | (xi+1)  [4]
+	(xi+8) [5] | (xi+9) [6] | (xi+10) [7]
+	---------------------------*/
+	int neighbor_idx_calc[] = {-10, -9, -8, -1, 1, 8, 9, 10};
+
+	while (!arcs.empty()) {
+		// Remove-first(queue)
+		arcType first = arcs.front();
+		arcs.pop();
+
+		// Determine if first.source is left-most or right-most index
+		char pos = 'G'; // L: leftmost, R: rightmost, G: general
+		if (first.source%9) pos='L';
+		if ((first.source+1)%9==0) pos='R';
+
+		if (revise(first.source, first.destination, domain, C)) { // if revised
+			if (domain[first.source].empty()) return false; // if domain is empty, no solution
+			
+			// Get neighboring index of source arc (xi)
+			for (int i = 0; i < 8; i ++) { // total of 8 neighbors
+				if (pos='L') // skip left neighbors
+					if (i == 0 || i == 3 || i == 5) continue;
+				if (pos='R') // skip right neighbors
+					if (i == 2 || i == 4 || i == 7) continue;
+
+				int xk = first.source + neighbor_idx_calc[i];
+				if (xk < 0) continue; // skip neighbor less than row 1
+				else if (xk > 80) continue; // skip neighbor more than last row
+				else if (xk == first.destination) continue; // xk == xj
+				else {
+					arcType newArc = {xk, first.source}; // {xk, xi}
+					arcs.push(newArc); // add (xk, xi) to queue
+				}
+			}
+		}
+	}
 	return true;
 }
 
 bool revise(int xi, int xj, vector<int> domain[81], const bool C[81][81])
 {
-	return true;
+	bool revised = false;
+
+	if (C[xi][xj]) { // If constraint exists between two cell, go through revision check
+		for (int i_idx = 0; i_idx < domain[xi].size(); i_idx++) { // Loop through Domain of (xi)
+			bool satisfied = false; // Initially unsatisfied
+
+			for (int j_idx = 0; j_idx < domain[xj].size(); j_idx++) // Loop through Domain of (xj)
+				if (domain[xi][i_idx] != domain[xj][j_idx]) satisfied = true; // some value satisfies constraint
+			
+			if (!satisfied) { // if no value in domain[xj] satisfy constraint with value domain[xi][i_dix]
+				domain[xi].erase(domain[xi].begin() + i_idx); // remove unsatisfied value domain[xi][i_dix]
+				revised = true;
+			}
+		}
+	}
+	return revised;
 }
 
 
