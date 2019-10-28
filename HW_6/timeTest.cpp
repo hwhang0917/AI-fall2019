@@ -83,16 +83,17 @@ int main()
 	// cout << endl << "The CSP domain:\n";
 	// displaySudokuCSP(assignment, domain);
     
+	vector<long> BT, BT_MRV, BT_AC3, BT_MRV_AC3;
 
     // BackTrack computation
-    cout << "Testing the backTracking...\n";
+    cout << "==========Testing the BT...\n";
 	for (int i = 0; i < 20; i++)
 	{
 		// system("cls");
 		getSudokuCSP(puzzles[i], assignment, domain);
 		getSudokuBoard(table);
 		fillDisplayBoard(table, assignment);
-		cout << "The puzzle#: " << i << endl;
+		cout << "The puzzle#: " << i << "~~ took [";
 		// displayBoard(table);
 		int count = 0;
 		for (int i = 0; i < 81; i++)
@@ -103,21 +104,59 @@ int main()
 		vector<int> result = backtrackCSP(assignment, count, domain, C);
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start); 
-        cout << "i: " <<  duration.count() << endl;
+		BT.push_back(duration.count());
+        cout << duration.count() << " ms] to solve" << endl;
 		fillDisplayBoard(table, result);
 		// displayBoard(table);
 		// system("pause");
 	}
 
-    // BackTrack + AC3 computation
-    cout << "Testing the backTracking...\n";
+	long sum = 0;
+	double avg = 0.0;
+
+	cout << "Backtrack average time: ";
+	for (long ms: BT) sum += ms; avg = sum / 20.0;
+	cout << avg << endl; sum = 0; avg = 0.0;
+
+	// BackTrack_MRV computation
+    cout << "==========Testing the BT_MRV...\n";
 	for (int i = 0; i < 20; i++)
 	{
 		// system("cls");
 		getSudokuCSP(puzzles[i], assignment, domain);
 		getSudokuBoard(table);
 		fillDisplayBoard(table, assignment);
-		cout << "The puzzle#: " << i << endl;
+		cout << "The puzzle#: " << i << "~~ took [";
+		// displayBoard(table);
+		int count = 0;
+		for (int i = 0; i < 81; i++)
+			if (assignment[i] > 0)
+				count++;
+
+        auto start = high_resolution_clock::now();
+		vector<int> result = backtrackCSP_MRV(assignment, count, domain, C);
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start); 
+		BT_MRV.push_back(duration.count());
+        cout << duration.count() << " ms] to solve" << endl;
+		fillDisplayBoard(table, result);
+		// displayBoard(table);
+		// system("pause");
+	}
+
+	cout << "Backtrack_MRV average time: ";
+	for (long ms: BT_MRV) sum += ms; avg = sum / 20.0;
+	cout << avg << endl; sum = 0; avg = 0.0;
+
+    // BackTrack + AC3 computation
+    cout << "==========Testing the BT_AC3...\n";
+	for (int i = 0; i < 20; i++)
+	{
+		// system("cls");
+		getSudokuCSP(puzzles[i], assignment, domain);
+		getSudokuBoard(table);
+		fillDisplayBoard(table, assignment);
+		cout << "The puzzle#: " << i << "~~ took [";
 		// displayBoard(table);
         AC3(domain, C);
 		int count = 0;
@@ -129,13 +168,65 @@ int main()
 		vector<int> result = backtrackCSP(assignment, count, domain, C);
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start); 
-        cout << "       solved: " <<  duration.count() << endl;
+		BT_AC3.push_back(duration.count());
+        cout << duration.count() << " ms] to solve" << endl;
 
 		fillDisplayBoard(table, result);
 		// displayBoard(table);
 		// system("pause");
 	}
 
+	cout << "Backtrack_AC3 average time: ";
+	for (long ms: BT_AC3) sum += ms; avg = sum / 20.0;
+	cout << avg << endl; sum = 0; avg = 0.0;
+
+	// BackTrack_MRV + AC3 computation
+    cout << "==========Testing the BT_MRV_AC3...\n";
+	for (int i = 0; i < 20; i++)
+	{
+		// system("cls");
+		getSudokuCSP(puzzles[i], assignment, domain);
+		getSudokuBoard(table);
+		fillDisplayBoard(table, assignment);
+		cout << "The puzzle#: " << i << "~~ took [";
+		// displayBoard(table);
+        AC3(domain, C);
+		int count = 0;
+		for (int i = 0; i < 81; i++)
+			if (assignment[i] > 0)
+				count++;
+
+        auto start = high_resolution_clock::now();
+		vector<int> result = backtrackCSP_MRV(assignment, count, domain, C);
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start); 
+		BT_MRV_AC3.push_back(duration.count());
+        cout << duration.count() << " ms] to solve" << endl;
+
+		fillDisplayBoard(table, result);
+		// displayBoard(table);
+		// system("pause");
+	}
+
+	cout << "Backtrack_MRV_AC3 average time: ";
+	for (long ms: BT_MRV_AC3) sum += ms; avg = sum / 20.0;
+	cout << avg << endl; sum = 0; avg = 0.0;
+
+	// Print Result of BT, BT_MRV, BT_AC3, BT_MRV_AC3
+	cout << "==============FINAL RESULT==============" << endl;
+	cout << "Backtrack average time: ";
+	for (long ms: BT) sum += ms; avg = sum / 20.0;
+	cout << avg << endl; sum = 0; avg = 0.0;
+	cout << "Backtrack_MRV average time: ";
+	for (long ms: BT_MRV) sum += ms; avg = sum / 20.0;
+	cout << avg << endl; sum = 0; avg = 0.0;
+	cout << "Backtrack_AC3 average time: ";
+	for (long ms: BT_AC3) sum += ms; avg = sum / 20.0;
+	cout << avg << endl; sum = 0; avg = 0.0;
+	cout << "Backtrack_MRV_AC3 average time: ";
+	for (long ms: BT_MRV_AC3) sum += ms; avg = sum / 20.0;
+	cout << avg << endl; sum = 0; avg = 0.0;
+	cout << "========================================" << endl;
 
 	system("pause");
 	return 0;
@@ -467,6 +558,41 @@ bool revise(int xi, int xj, vector<int> domain[81], const bool C[81][81])
 vector<int> backtrackCSP_MRV(vector<int> assignment, int count, vector<int> domain[81], const bool C[81][81])
 {
 	vector<int> result;
+	if (count >= 81) //if assignment complete
+		return assignment;
+	//pick the next unassigned variable
+	int r = 0;
+	vector<int> emptyIndex; // vector of empty indexes
+	vector<int> domainSize; // vector of domain size
+	for (int r = 0; r < 81; r++) { // find all empty index
+		if (assignment[r] == 0) {
+			emptyIndex.push_back(r);
+			domainSize.push_back(domain[r].size());
+		}
+	}
+	r = emptyIndex[distance(domainSize.begin(),min_element(domainSize.begin(), domainSize.end()))]; // pick the most contrained domain
+	int n = domain[r].size();
+	for (int i = 0; i < n; i++)
+	{
+		int value = domain[r][i];  //pick the next value
+
+		//check for if value is consitent with the past
+		bool consistent = true;
+		for (int j = 0; j < 81; j++)
+			if (j != r && C[r][j] && assignment[j] == value)
+			{
+				consistent = false;
+				break;
+			}
+		if (consistent)
+		{
+			assignment[r] = value;
+			result = backtrackCSP(assignment, count + 1, domain, C);
+			if (result.size() > 0)
+				return result;
+			assignment[r] = 0;
+		}
+	}
 	return result;
 }
 

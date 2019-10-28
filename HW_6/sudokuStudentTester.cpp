@@ -481,6 +481,41 @@ bool revise(int xi, int xj, vector<int> domain[81], const bool C[81][81])
 vector<int> backtrackCSP_MRV(vector<int> assignment, int count, vector<int> domain[81], const bool C[81][81])
 {
 	vector<int> result;
+	if (count >= 81) //if assignment complete
+		return assignment;
+	//pick the next unassigned variable
+	int r = 0;
+	vector<int> emptyIndex; // vector of empty indexes
+	vector<int> domainSize; // vector of domain size
+	for (int r = 0; r < 81; r++) { // find all empty index
+		if (assignment[r] == 0) {
+			emptyIndex.push_back(r);
+			domainSize.push_back(domain[r].size());
+		}
+	}
+	r = emptyIndex[distance(domainSize.begin(),min_element(domainSize.begin(), domainSize.end()))]; // pick the most contrained domain
+	int n = domain[r].size();
+	for (int i = 0; i < n; i++)
+	{
+		int value = domain[r][i];  //pick the next value
+
+		//check for if value is consitent with the past
+		bool consistent = true;
+		for (int j = 0; j < 81; j++)
+			if (j != r && C[r][j] && assignment[j] == value)
+			{
+				consistent = false;
+				break;
+			}
+		if (consistent)
+		{
+			assignment[r] = value;
+			result = backtrackCSP(assignment, count + 1, domain, C);
+			if (result.size() > 0)
+				return result;
+			assignment[r] = 0;
+		}
+	}
 	return result;
 }
 

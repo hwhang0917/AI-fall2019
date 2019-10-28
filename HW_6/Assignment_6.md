@@ -120,7 +120,46 @@ Assignment #4
    c) (**1 point**) A basic implementation of the backtrack algorithm on Figure 6.5, page 215 is given to you (called *backtrackCSP*). It does not do any inference or use any heuristics. Implement the backtrack algorithm with the MRV heuristics built in. You can build the function from scratch, or you can make a simple modification the function provided. The variable count keeps track of how many variables have already been assigned.
    
    ```C++
-   vector<int> backtrackCSP_MRV(vector<int> assignment, int count, vector<int> domain[81], const bool C[81][81]);
+   vector<int> backtrackCSP_MRV(vector<int> assignment, int count, vector<int> domain[81], const bool C[81][81])
+   {
+   	vector<int> result;
+   	if (count >= 81) //if assignment complete
+   		return assignment;
+   	//pick the next unassigned variable
+   	int r = 0;
+   	vector<int> emptyIndex; // vector of empty indexes
+   	vector<int> domainSize; // vector of domain size
+   	for (int r = 0; r < 81; r++) { // find all empty index
+   		if (assignment[r] == 0) {
+   			emptyIndex.push_back(r);
+   			domainSize.push_back(domain[r].size());
+   		}
+   	}
+   	r = emptyIndex[distance(domainSize.begin(),min_element(domainSize.begin(), domainSize.end()))]; // pick the most contrained domain
+   	int n = domain[r].size();
+   	for (int i = 0; i < n; i++)
+   	{
+   		int value = domain[r][i];  //pick the next value
+   
+   		//check for if value is consitent with the past
+   		bool consistent = true;
+   		for (int j = 0; j < 81; j++)
+   			if (j != r && C[r][j] && assignment[j] == value)
+   			{
+   				consistent = false;
+   				break;
+   			}
+   		if (consistent)
+   		{
+   			assignment[r] = value;
+   			result = backtrackCSP(assignment, count + 1, domain, C);
+   			if (result.size() > 0)
+   				return result;
+   			assignment[r] = 0;
+   		}
+   	}
+   	return result;
+   }
    ```
    
    d) (**2 points**) You are given a sets of puzzle in the main function.
@@ -131,8 +170,8 @@ Assignment #4
    Record the results in the table below:
    
    |                       | Backtrack | Backtrack+MRV | Backtrack+AC3 | Backtrack+AC3+MRV |
-   | --------------------- | --------- | ------------- | ------------- | ----------------- |
-   | Average Solution time |           |               |               |                   |
+   | --------------------- | :-------: | :-----------: | :-----------: | :---------------: |
+   | Average Solution time | 11.7707 s |   11.6292 s   |   8.7705 s    |     6.23201 s     |
    
 
 
