@@ -13,3 +13,4 @@ This is a personal repository of Heesang Mark Whang taking CSCI440 course of Bio
   * [Note for homework #4](./HW_4/Note.md)
 * [Homework #5](./HW_5/Assignment_5.md)
 * [Homework #6](./HW_6/Assignment_6.md)
+* [Homework #7](./HW_7/Assignment_7.md) 
