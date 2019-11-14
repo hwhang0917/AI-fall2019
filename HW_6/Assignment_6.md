@@ -2,7 +2,7 @@ Heesang Mark Whang
 
 CSCI 440: Artificial Intelligence
 
-Assignment #4
+Assignment #6
 
 10/30/2019
 
