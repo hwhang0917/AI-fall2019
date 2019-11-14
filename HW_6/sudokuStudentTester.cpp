@@ -83,60 +83,60 @@ int main()
 	cout << endl << "The CSP domain:\n";
 	displaySudokuCSP(assignment, domain);
 
-	cout << "Testing the revise function...\n";
-	for (int i = 0; i < 3; i++)
-	{
-		int xi, xj;
-		cout << "Enter the two cells you want to resolve (indexed 0-80 as discussed) : ";
-		cin >> xi >> xj;
-		if (revise(xi, xj, domain, C))
-		{
-			cout << "The domain of cell #" << xi << " has been revised.  Here is the new domain: \n{";
-			for (auto v : domain[xi])
-				cout << v << ", ";
-			cout << "}.\n";
-		}
-		else
-			cout << "No revisions.\n";
-	}
-	system("pause");
-	system("cls");
-	cout << "The status of the overall domain after the revisions is :\n";
-	cout << endl << "The CSP domain:\n";
-	displaySudokuCSP(assignment, domain);
-	system("pause");
+	// cout << "Testing the revise function...\n";
+	// for (int i = 0; i < 3; i++)
+	// {
+	// 	int xi, xj;
+	// 	cout << "Enter the two cells you want to resolve (indexed 0-80 as discussed) : ";
+	// 	cin >> xi >> xj;
+	// 	if (revise(xi, xj, domain, C))
+	// 	{
+	// 		cout << "The domain of cell #" << xi << " has been revised.  Here is the new domain: \n{";
+	// 		for (auto v : domain[xi])
+	// 			cout << v << ", ";
+	// 		cout << "}.\n";
+	// 	}
+	// 	else
+	// 		cout << "No revisions.\n";
+	// }
+	// system("pause");
+	// system("cls");
+	// cout << "The status of the overall domain after the revisions is :\n";
+	// cout << endl << "The CSP domain:\n";
+	// displaySudokuCSP(assignment, domain);
+	// system("pause");
 
 
-	//AC3 Testing
-	for (int i = 0; i < 3; i++)
-	{
-		system("cls");
-		cout << "Testing the AC3 function...\n";
-		getSudokuCSP(puzzles[i], assignment, domain);
-		getSudokuBoard(table);
-		fillDisplayBoard(table, assignment);
-		cout << "The puzzle:\n";
-		displayBoard(table);
-		cout << endl << "The CSP domain:\n";
-		displaySudokuCSP(assignment, domain);
-		AC3(domain, C);
-		cout << endl << "The CSP domain after AC3:\n";
-		displaySudokuCSP(assignment, domain);
-		system("pause");
+	// //AC3 Testing
+	// for (int i = 0; i < 3; i++)
+	// {
+	// 	system("cls");
+	// 	cout << "Testing the AC3 function...\n";
+	// 	getSudokuCSP(puzzles[i], assignment, domain);
+	// 	getSudokuBoard(table);
+	// 	fillDisplayBoard(table, assignment);
+	// 	cout << "The puzzle:\n";
+	// 	displayBoard(table);
+	// 	cout << endl << "The CSP domain:\n";
+	// 	displaySudokuCSP(assignment, domain);
+	// 	AC3(domain, C);
+	// 	cout << endl << "The CSP domain after AC3:\n";
+	// 	displaySudokuCSP(assignment, domain);
+	// 	system("pause");
 
-	}
+	// }
 
 
 	//MRV testing
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		system("cls");
 		cout << "Testing the backTracking with the MRV heuristic function...\n";
 		getSudokuCSP(puzzles[i], assignment, domain);
 		getSudokuBoard(table);
 		fillDisplayBoard(table, assignment);
-		cout << "The puzzle:\n";
+		cout << "The puzzle: " << i << endl;
 		displayBoard(table);
 		cout << endl << "The solution:\n";
 		int count = 0;
@@ -484,16 +484,24 @@ vector<int> backtrackCSP_MRV(vector<int> assignment, int count, vector<int> doma
 	if (count >= 81) //if assignment complete
 		return assignment;
 	//pick the next unassigned variable
-	int r = 0;
-	vector<int> emptyIndex; // vector of empty indexes
-	vector<int> domainSize; // vector of domain size
-	for (int r = 0; r < 81; r++) { // find all empty index
-		if (assignment[r] == 0) {
-			emptyIndex.push_back(r);
-			domainSize.push_back(domain[r].size());
+
+	int min = 0;
+	if (assignment[min] != 0) { // If 0 is not the first blank position
+		for (int i = 0; i < 81; i ++) { // get the first blank space as min
+			if (assignment[i]==0) {
+				min = i;
+				break;
+			}
 		}
 	}
-	r = emptyIndex[distance(domainSize.begin(),min_element(domainSize.begin(), domainSize.end()))]; // pick the most contrained domain
+	int r = 0;
+	for (int i = 0; i < 81; i ++) { // find the minimum domain size
+		if (assignment[i] == 0) {
+			if (domain[i].size() <= domain[min].size())
+				min = i;
+		}
+	}
+	r = min;
 	int n = domain[r].size();
 	for (int i = 0; i < n; i++)
 	{
@@ -510,7 +518,7 @@ vector<int> backtrackCSP_MRV(vector<int> assignment, int count, vector<int> doma
 		if (consistent)
 		{
 			assignment[r] = value;
-			result = backtrackCSP(assignment, count + 1, domain, C);
+			result = backtrackCSP_MRV(assignment, count + 1, domain, C);
 			if (result.size() > 0)
 				return result;
 			assignment[r] = 0;

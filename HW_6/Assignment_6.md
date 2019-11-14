@@ -126,16 +126,24 @@ Assignment #4
    	if (count >= 81) //if assignment complete
    		return assignment;
    	//pick the next unassigned variable
-   	int r = 0;
-   	vector<int> emptyIndex; // vector of empty indexes
-   	vector<int> domainSize; // vector of domain size
-   	for (int r = 0; r < 81; r++) { // find all empty index
-   		if (assignment[r] == 0) {
-   			emptyIndex.push_back(r);
-   			domainSize.push_back(domain[r].size());
+   
+   	int min = 0;
+   	if (assignment[min] != 0) { // If 0 is not the first blank position
+   		for (int i = 0; i < 81; i ++) { // get the first blank space as min
+   			if (assignment[i]==0) {
+   				min = i;
+   				break;
+   			}
    		}
    	}
-   	r = emptyIndex[distance(domainSize.begin(),min_element(domainSize.begin(), domainSize.end()))]; // pick the most contrained domain
+   	int r = 0;
+   	for (int i = 0; i < 81; i ++) { // find the minimum domain size
+   		if (assignment[i] == 0) {
+   			if (domain[i].size() <= domain[min].size())
+   				min = i;
+   		}
+   	}
+   	r = min;
    	int n = domain[r].size();
    	for (int i = 0; i < n; i++)
    	{
@@ -152,7 +160,7 @@ Assignment #4
    		if (consistent)
    		{
    			assignment[r] = value;
-   			result = backtrackCSP(assignment, count + 1, domain, C);
+   			result = backtrackCSP_MRV(assignment, count + 1, domain, C);
    			if (result.size() > 0)
    				return result;
    			assignment[r] = 0;
@@ -169,9 +177,9 @@ Assignment #4
    
    Record the results in the table below:
    
-   |                       | Backtrack | Backtrack+MRV | Backtrack+AC3 | Backtrack+AC3+MRV |
-   | --------------------- | :-------: | :-----------: | :-----------: | :---------------: |
-   | Average Solution time | 11.7707 s |   11.6292 s   |   8.7705 s    |     6.23201 s     |
+   |                            | Backtrack | Backtrack+MRV | Backtrack+AC3 | Backtrack+AC3+MRV |
+   | -------------------------- | :-------: | :-----------: | :-----------: | :---------------: |
+   | Average Solution time (ms) | 11687.3ms |   19766.4ms   |   9045.75ms   |      13352ms      |
    
 
 
