@@ -14,7 +14,7 @@
     (isRobot BOT) ; BOT is a robot
 
     ; Bot spec init
-    (bot-at R1) ; bot is at room 1
+    (bot-at R2) ; bot is at room 1
     (clear BOT) ; BOT is free
     
     ; Accessibility of Rooms
