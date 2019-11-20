@@ -12,7 +12,7 @@ Robot Planning. In this assignment, you will gain experience with classical plan
 * There can be at most one object in room.
 * If the robot has picked up an object, it can only go to room that has no other
 
-![](.\robotState.png)
+![](./robotState.png)
 
 You will need to first write the domain file which defines the predicates and the actions necessary to solve this problem. You need to provide definitions for the following actions:
 
