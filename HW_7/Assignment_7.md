@@ -44,8 +44,9 @@ You also need to write a problem instance file which defines the initial and goa
                ; Object location
                (obj-at ?x ?y) ;object x is at room y
    
-               ; Room accessibility
+               ; Room accessibility / conditon
                (can-go ?x ?y) ;can move from room x to room y
+               (has-obj ?x) ;room X has an object
    )
    
    (:action move-without-object
@@ -77,6 +78,8 @@ You also need to write a problem instance file which defines the initial and goa
                    
                    ; Object location
                    (not (obj-at ?object ?start)) (not (obj-at ?object ?dest)) ; There are no objects in either room start or end
+                   (holding ?object)
+                   (not (has-obj ?dest))
    
                    ; robot spec
                    (bot-at ?start) ; robot is in start room
@@ -102,6 +105,7 @@ You also need to write a problem instance file which defines the initial and goa
    
                    ; Object location
                    (obj-at ?object ?room) ; object is at the room
+                   (has-obj ?room) ; room has an object
    
                    ; robot spec
                    (bot-at ?room) ; robot is in the room
@@ -111,6 +115,7 @@ You also need to write a problem instance file which defines the initial and goa
        :effect (and 
                    ; Pick up object
                    (not (obj-at ?object ?room)) ; remove object from room
+                   (not (has-obj ?room)) ; room no longer has object
                    (not (clear ?robot)) ; robot is no longer free
                    (holding ?object) ; robot is holding the object
        )
@@ -124,6 +129,7 @@ You also need to write a problem instance file which defines the initial and goa
    
                    ; Object location
                    (not (obj-at ?object ?room)) ; object is NOT at the room
+                   (not (has-obj ?room)) ; room does not have object
    
                    ; robot spec
                    (bot-at ?room) ; robot is in the room
@@ -133,6 +139,7 @@ You also need to write a problem instance file which defines the initial and goa
        :effect (and 
                    ; Release object
                    (obj-at ?object ?room) ; put object in room
+                   (has-obj ?room) ; room now have an object
                    (clear ?robot) ; robot is free
                    (not (holding ?object)) ; robot is no longer holding the object
        )
@@ -176,15 +183,15 @@ You also need to write a problem instance file which defines the initial and goa
        (can-go R9 R6) ; Can go from R9 -> R6
    
        ; Object Locations
-       (obj-at O1 R6) ; Object 1 at Room 6
-       (obj-at O2 R4) ; Object 2 at Room 4
-       (obj-at O3 R7) ; Object 3 at Room 7
+       (obj-at O1 R6) (has-obj R6) ; Object 1 at Room 6
+       (obj-at O2 R4) (has-obj R4); Object 2 at Room 4
+       (obj-at O3 R7) (has-obj R7); Object 3 at Room 7
    )
    
    (:goal (and
-       (obj-at O1 R7) ; Object 1 at Room 6
-       (obj-at O2 R2) ; Object 2 at Room 4
-       (obj-at O3 R9) ; Object 3 at Room 7
+       (obj-at O1 R7) (has-obj R7); Object 1 at Room 7
+       (obj-at O2 R2) (has-obj R2); Object 2 at Room 2
+       (obj-at O3 R9) (has-obj R9); Object 3 at Room 9
    ))
    )
    
@@ -192,7 +199,6 @@ You also need to write a problem instance file which defines the initial and goa
    **RSULT**
    
    ```
-   
    Cite our paper if this tool was useful for your work:
    
    @inproceedings{magnaguagno2017web,
@@ -203,32 +209,45 @@ You also need to write a problem instance file which defines the initial and goa
      year={2017}
    }
    
-   Tue Nov 19 2019 02:07:16 GMT-0800
+   Tue Nov 19 2019 16:16:10 GMT-0800
    Result: SUCCESS
    Domain: robotdomain
    Problem: robotcase_1
    Plan:
      (move-without-object r1 r4 bot)
-     (pickup r4 o2 bot)
-     (move-with-object r4 r5 o1 bot)
-     (move-with-object r5 r6 o2 bot)
-     (move-with-object r6 r3 o2 bot)
-     (move-with-object r3 r2 o1 bot)
-     (release r2 o2 bot)
-     (move-without-object r2 r3 bot)
-     (move-without-object r3 r6 bot)
+     (move-without-object r4 r5 bot)
+     (move-without-object r5 r6 bot)
      (pickup r6 o1 bot)
+     (move-with-object r6 r3 o1 bot)
+     (release r3 o1 bot)
+     (move-without-object r3 r6 bot)
+     (move-without-object r6 r5 bot)
+     (move-without-object r5 r8 bot)
+     (move-without-object r8 r7 bot)
+     (pickup r7 o3 bot)
+     (move-with-object r7 r8 o3 bot)
+     (move-with-object r8 r5 o3 bot)
+     (move-with-object r5 r6 o3 bot)
+     (move-with-object r6 r9 o3 bot)
+     (release r9 o3 bot)
+     (move-without-object r9 r6 bot)
+     (move-without-object r6 r3 bot)
+     (pickup r3 o1 bot)
+     (move-with-object r3 r6 o1 bot)
      (move-with-object r6 r5 o1 bot)
      (move-with-object r5 r8 o1 bot)
      (move-with-object r8 r7 o1 bot)
      (release r7 o1 bot)
-     (pickup r7 o3 bot)
-     (move-with-object r7 r8 o2 bot)
-     (move-with-object r8 r5 o1 bot)
-     (move-with-object r5 r6 o1 bot)
-     (move-with-object r6 r9 o1 bot)
-     (release r9 o3 bot)
-   Execution time: 0.1205s
+     (move-without-object r7 r8 bot)
+     (move-without-object r8 r5 bot)
+     (move-without-object r5 r4 bot)
+     (pickup r4 o2 bot)
+     (move-with-object r4 r5 o2 bot)
+     (move-with-object r5 r6 o2 bot)
+     (move-with-object r6 r3 o2 bot)
+     (move-with-object r3 r2 o2 bot)
+     (release r2 o2 bot)
+   Execution time: 0.1484s
    ```
    
    
@@ -254,34 +273,44 @@ You also need to write a problem instance file which defines the initial and goa
      year={2017}
    }
    
-   Tue Nov 19 2019 02:09:23 GMT-0800
+   Tue Nov 19 2019 16:18:37 GMT-0800 (북미 태평양 표준시)
    Result: SUCCESS
    Domain: robotdomain
-   Problem: robotcase_1
+   Problem: robotcase_2
    Plan:
      (move-without-object r2 r3 bot)
      (move-without-object r3 r6 bot)
      (pickup r6 o1 bot)
+     (move-with-object r6 r3 o1 bot)
+     (release r3 o1 bot)
+     (move-without-object r3 r6 bot)
+     (move-without-object r6 r5 bot)
+     (move-without-object r5 r8 bot)
+     (move-without-object r8 r7 bot)
+     (pickup r7 o3 bot)
+     (move-with-object r7 r8 o3 bot)
+     (move-with-object r8 r5 o3 bot)
+     (move-with-object r5 r6 o3 bot)
+     (move-with-object r6 r9 o3 bot)
+     (release r9 o3 bot)
+     (move-without-object r9 r6 bot)
+     (move-without-object r6 r3 bot)
+     (pickup r3 o1 bot)
+     (move-with-object r3 r6 o1 bot)
      (move-with-object r6 r5 o1 bot)
      (move-with-object r5 r8 o1 bot)
      (move-with-object r8 r7 o1 bot)
      (release r7 o1 bot)
-     (pickup r7 o3 bot)
-     (move-with-object r7 r8 o2 bot)
-     (move-with-object r8 r5 o1 bot)
-     (move-with-object r5 r6 o1 bot)
-     (move-with-object r6 r9 o1 bot)
-     (release r9 o3 bot)
-     (move-without-object r9 r6 bot)
-     (move-without-object r6 r5 bot)
+     (move-without-object r7 r8 bot)
+     (move-without-object r8 r5 bot)
      (move-without-object r5 r4 bot)
      (pickup r4 o2 bot)
-     (move-with-object r4 r5 o1 bot)
-     (move-with-object r5 r6 o1 bot)
-     (move-with-object r6 r3 o1 bot)
-     (move-with-object r3 r2 o1 bot)
+     (move-with-object r4 r5 o2 bot)
+     (move-with-object r5 r6 o2 bot)
+     (move-with-object r6 r3 o2 bot)
+     (move-with-object r3 r2 o2 bot)
      (release r2 o2 bot)
-   Execution time: 0.1525s
+   Execution time: 0.1154s
    ```
    
    

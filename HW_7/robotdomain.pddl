@@ -16,8 +16,9 @@
             ; Object location
             (obj-at ?x ?y) ;object x is at room y
 
-            ; Room accessibility
+            ; Room accessibility / conditon
             (can-go ?x ?y) ;can move from room x to room y
+            (has-obj ?x) ;room X has an object
 )
 
 (:action move-without-object
@@ -49,6 +50,8 @@
                 
                 ; Object location
                 (not (obj-at ?object ?start)) (not (obj-at ?object ?dest)) ; There are no objects in either room start or end
+                (holding ?object)
+                (not (has-obj ?dest))
 
                 ; robot spec
                 (bot-at ?start) ; robot is in start room
@@ -74,6 +77,7 @@
 
                 ; Object location
                 (obj-at ?object ?room) ; object is at the room
+                (has-obj ?room) ; room has an object
 
                 ; robot spec
                 (bot-at ?room) ; robot is in the room
@@ -83,6 +87,7 @@
     :effect (and 
                 ; Pick up object
                 (not (obj-at ?object ?room)) ; remove object from room
+                (not (has-obj ?room)) ; room no longer has object
                 (not (clear ?robot)) ; robot is no longer free
                 (holding ?object) ; robot is holding the object
     )
@@ -96,6 +101,7 @@
 
                 ; Object location
                 (not (obj-at ?object ?room)) ; object is NOT at the room
+                (not (has-obj ?room)) ; room does not have object
 
                 ; robot spec
                 (bot-at ?room) ; robot is in the room
@@ -105,6 +111,7 @@
     :effect (and 
                 ; Release object
                 (obj-at ?object ?room) ; put object in room
+                (has-obj ?room) ; room now have an object
                 (clear ?robot) ; robot is free
                 (not (holding ?object)) ; robot is no longer holding the object
     )

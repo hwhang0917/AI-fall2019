@@ -29,14 +29,14 @@
     (can-go R9 R6) ; Can go from R9 -> R6
 
     ; Object Locations
-    (obj-at O1 R6) ; Object 1 at Room 6
-    (obj-at O2 R4) ; Object 2 at Room 4
-    (obj-at O3 R7) ; Object 3 at Room 7
+    (obj-at O1 R6) (has-obj R6) ; Object 1 at Room 6
+    (obj-at O2 R4) (has-obj R4); Object 2 at Room 4
+    (obj-at O3 R7) (has-obj R7); Object 3 at Room 7
 )
 
 (:goal (and
-    (obj-at O1 R7) ; Object 1 at Room 6
-    (obj-at O2 R2) ; Object 2 at Room 4
-    (obj-at O3 R9) ; Object 3 at Room 7
+    (obj-at O1 R7) (has-obj R7); Object 1 at Room 7
+    (obj-at O2 R2) (has-obj R2); Object 2 at Room 2
+    (obj-at O3 R9) (has-obj R9); Object 3 at Room 9
 ))
 )
