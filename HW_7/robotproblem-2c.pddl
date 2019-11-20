@@ -1,4 +1,4 @@
-(define (problem robotCase_1) (:domain robotDomain)
+(define (problem robotCase_2) (:domain robotDomain)
 (:objects R1 R2 R3 R4 R5 R6 R7 R8 R9 ; Room numbers (1~9)
             O1 O2 O3 ; Objects (1~3)
             BOT ; robot
